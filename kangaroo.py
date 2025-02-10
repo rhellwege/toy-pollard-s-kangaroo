@@ -1,6 +1,6 @@
 import math
 import random
-r = math.ceil(random.random() * 1000)
+r = math.ceil(random.random() * 1000) # for testing to see it run differently every time
 
 # pseudorandom deterministic function should be uniform
 # cannot return 0
@@ -42,7 +42,7 @@ def kangaroo(alpha, beta, n, a, b):
 if __name__ == "__main__":
     g = 3
     n = 4567
-    secret = 4000
+    secret = 243
     beta = pow(g, secret, n)
     print("beta = ", beta)
     try:
