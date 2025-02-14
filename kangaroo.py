@@ -13,6 +13,7 @@ def kangaroo(alpha, beta, n, a, b):
     trapSteps = math.floor(math.sqrt((b-a)/2)) # heuristic tame trap steps
     upperStep = math.floor(math.sqrt((b-a)/2))   # the output of the random number generator for steps
     # tame
+    print("setting trap at ", trapSteps)
     xTame = pow(alpha, b, n)     # trap
     dTame = 0                    # distance traveled (sum of steps)
     for i in range(0,trapSteps):
@@ -20,6 +21,7 @@ def kangaroo(alpha, beta, n, a, b):
         xTame = (xTame * pow(alpha, step, n)) % n
         dTame += step
     # wild
+    print(xTame, dTame)
     yWild = beta # start at beta so we can write alpha in terms of beta and solve for x
     dWild = 0 # distance traveled
     i = 0
@@ -40,12 +42,13 @@ def kangaroo(alpha, beta, n, a, b):
     raise Exception("failed to reach trap.")
 
 if __name__ == "__main__":
-    g = 3
-    n = 4567
-    secret = 243
+    g = 2
+    n =      13
+    secret = 6
     beta = pow(g, secret, n)
     print("beta = ", beta)
     try:
         print(kangaroo(g, beta, n, 0, n))
+
     except:
         print("failed.")
