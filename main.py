@@ -1,6 +1,7 @@
 from manim import *
 import math
 import random
+from telnetlib import OUTMRK
 
 # Set a random seed for reproducibility
 random.seed(792)
@@ -103,7 +104,6 @@ class KangarooAnimation(Scene):
             self.play(Create(wild_arrows[-1]), run_time=0.5)
             self.wait(0.1)
 
-
         # Show the final result
         result_text = MathTex(f"Secret x = {dTame + dWild}").to_edge(UP)
         self.play(Write(result_text))
@@ -139,3 +139,27 @@ class KangarooAnimation(Scene):
 
 # To run the animation, use the following command in your terminal:
 # manim -pql your_script_name.py KangarooAnimation
+
+class DiscreteLog(Scene):
+    def construct(self):
+        g = 2
+        n = 11
+        colors = [RED, GREEN, BLUE, YELLOW, PURPLE, ORANGE, PINK, TEAL]
+        d = {}
+        for i in range(1,n):
+            d[pow(g, i, n)] = i
+        self.add(MathTex(f"{g}^i \mod {n}", font_size=30).move_to(ORIGIN + UP * 3.5))
+        inputs = [Text("1", font_size=20, color=colors[0]).move_to(ORIGIN + LEFT * 2 + UP * 3)]
+        self.add(inputs[-1])
+        outputs = [Text("1", font_size=20, color=colors[(d[1]-1) % len(colors)]).move_to(ORIGIN + RIGHT * 2 + UP * 3)]
+        self.add(outputs[-1])
+        for i in range(1,n-1):
+            inputs.append(Text(f"{i+1}", font_size=20, color=colors[i % len(colors)]).next_to(inputs[-1], DOWN))
+            self.add(inputs[-1])
+            outputs.append(Text(f"{i+1}", font_size=20, color=colors[(d[i+1]-1) % len(colors)]).next_to(outputs[-1], DOWN))
+            self.add(outputs[-1])
+        for i in range(n-1):
+            self.add(Arrow(color=colors[i % len(colors)],
+                start=inputs[i].get_center(),
+                end=outputs[pow(g,i+1, n)-1].get_center(),
+                stroke_width=2))
