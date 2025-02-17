@@ -74,7 +74,7 @@ class KangarooAnimation(Scene):
         circle_radius = 3
         num_members = n - 1
         circle_center = ORIGIN + 3 * RIGHT
-        status_center = ORIGIN + 4 * LEFT + 3 * UP
+        status_center = ORIGIN + 3.4 * LEFT + 3 * UP
 
         general_status = MathTex(
             f"\\alpha={g}, n={(n%n) + 1}, x={secret}").move_to(status_center)
@@ -122,12 +122,12 @@ class KangarooAnimation(Scene):
             self.play(Create(tame_arrows[-1]), run_time=0.5)
             self.wait(0.1)
 
-            if i == len(tame_steps) - 1:
-                break
-
             updated_dist_status = MathTex(f"d_T = {dTame}, x_T = {xTame}").move_to(dist_status.get_center())
             self.play(Transform(dist_status, updated_dist_status))
             self.wait(0.5)
+
+            if i == len(tame_steps) - 1:
+                break
 
             updated_next_step = MathTex(f"step = f({xTame}) = {rand(xTame, upperStep)}").move_to(next_step.get_center())
             self.play(Transform(next_step, updated_next_step))
@@ -137,19 +137,23 @@ class KangarooAnimation(Scene):
             self.play(Transform(next_x, updated_next_x))
             self.wait(0.5)
 
+        trap_circle = Circle(radius=0.58, color=RED).move_to(members[tame_steps[-1][0]])
         updated_kangaroo_status = Text(f"Tame kangaroo set a trap at {tame_steps[-1][0]}.", font_size=fsize).move_to(kangaroo_status.get_center())
-        self.play(FadeOut(next_x, next_step, dist_status), Transform(kangaroo_status, updated_kangaroo_status),
-            Create(Circle(radius=0.58, color=RED).move_to(members[tame_steps[-1][0]])))
-        self.wait(2)
-
 
         updated_kangaroo_status = Text(f"Wild kangaroo hopping until caught.", font_size=fsize).move_to(kangaroo_status.get_center())
-        self.play(Transform(kangaroo_status, updated_kangaroo_status))
 
+        updated_dist_status = MathTex(f"d_W = {0}, y_W = {beta}").move_to(dist_status.get_center())
+
+        updated_next_step = MathTex(f"step = f({beta}) = {rand(beta, upperStep)}").move_to(next_step.get_center())
+
+        updated_next_x = MathTex(f"y_W = {beta} * \\alpha ^ {rand(beta, upperStep)} \mod {n} = {((beta*pow(g, rand(beta, upperStep), n)) % n)}").move_to(next_x.get_center())
+        updated_general_status = MathTex(f"\\alpha = {g}, n = {n}, x={secret}, d_T={tame_steps[-1][1]}").move_to(general_status.get_center())
+        self.play(Transform(general_status, updated_general_status), Transform(next_x, updated_next_x), Transform(kangaroo_status, updated_kangaroo_status), Transform(next_step, updated_next_step), Transform(dist_status, updated_dist_status), Transform(general_status, updated_general_status), Transform(kangaroo_status, updated_kangaroo_status), Create(trap_circle))
+        self.wait(2)
         # Animate the wild kangaroo
         wild_arrows = []
         for i, (yWild, dWild, step) in enumerate(wild_steps):
-            start = members[wild_steps[i - 1][0]] if i > 0 else members[0]
+            start = members[wild_steps[i - 1][0]] if i > 0 else members[beta]
             end = members[yWild]
             wild_arrow = Arrow(start=start, end=end,
                                color=RED, buff=0.3, stroke_width=3)
@@ -159,12 +163,12 @@ class KangarooAnimation(Scene):
             self.play(Create(wild_arrows[-1]), run_time=0.5)
             self.wait(0.1)
 
-            if i == len(wild_steps) - 1:
-                break
-
             updated_dist_status = MathTex(f"d_W = {dWild}, y_W = {yWild}").move_to(dist_status.get_center())
             self.play(Transform(dist_status, updated_dist_status))
             self.wait(0.5)
+
+            if i == len(wild_steps) - 1:
+                break
 
             updated_next_step = MathTex(f"step = f({yWild}) = {rand(yWild, upperStep)}").move_to(next_step.get_center())
             self.play(Transform(next_step, updated_next_step))
@@ -174,21 +178,15 @@ class KangarooAnimation(Scene):
             self.play(Transform(next_x, updated_next_x))
             self.wait(0.5)
 
-        updated_kangaroo_status = Text("Wild kangaroo caught!")
-        self.play(Transform(kangaroo_status, updated_kangaroo_status), FadeOut(dist_status, next_step, next_x), Create(Circle(radius=0.25, color=YELLOW).move_to(members[(tame_steps[-1][0]) % n])))
-        self.wait(1)
+        updated_kangaroo_status = Text("Wild kangaroo caught!", font_size=fsize).move_to(kangaroo_status.get_center())
+        success_circle =Circle(radius=0.25, color=YELLOW).move_to(members[(tame_steps[-1][0]) % n])
+
         # Show the final result
-        ans = (b + dTame - dWild) % n
         updated_dist_status = MathTex(f"x = b + d_T - d_W \\mod n").move_to(dist_status.get_center())
-        self.play(Transform(dist_status, updated_dist_status))
-        updated_next_step = MathTex(f"x = {n} + {tame_steps[-1][1]} - {wild_steps[-1][1]} \\mod {n} = {secret}").move_to(dist_status.get_center())
-        self.play(Transform(dist_status, updated_dist_status))
-        self.wait(2)
+        updated_next_step = MathTex(f"{n} + {tame_steps[-1][1]} - {wild_steps[-1][1]} \\mod {n} = {secret}").move_to(next_step.get_center())
+        self.play(Transform(kangaroo_status, updated_kangaroo_status), FadeOut(next_x), Create(success_circle), Transform(dist_status, updated_dist_status), Transform(next_step, updated_next_step))
+        self.wait(3)
 
         # Clean up the scene
-        self.play(FadeOut(*tame_arrows), FadeOut(*wild_arrows),  FadeOut(*member_circles), FadeOut(*member_labels))
-        self.wait(1)
-
-        # End the scene
-        self.play(FadeOut(*member_circles), FadeOut(*member_labels))
+        self.play(FadeOut(trap_circle, success_circle, problem_desc, dist_status, general_status, next_step, kangaroo_status, *tame_arrows, *wild_arrows, *member_circles, *member_labels), run_time=1)
         self.wait(1)
