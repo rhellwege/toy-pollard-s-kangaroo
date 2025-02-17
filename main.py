@@ -77,7 +77,7 @@ class KangarooAnimation(Scene):
         status_center = ORIGIN + 3.4 * LEFT + 3 * UP
 
         general_status = MathTex(
-            f"\\alpha={g}, n={(n%n) + 1}, x={secret}").move_to(status_center)
+            f"\\alpha={g}, n={n}, x={secret}").move_to(status_center)
         self.add(general_status)
         problem_desc = MathTex(f"\\beta \\equiv {g}^{secret} \mod {n} \equiv {beta}").next_to(
                     general_status, DOWN)
