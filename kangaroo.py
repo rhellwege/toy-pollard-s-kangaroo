@@ -1,6 +1,6 @@
 import math
 import random
-r = math.ceil(random.random() * 1000) # for testing to see it run differently every time
+r = math.ceil(random.random() * 333) # for testing to see it run differently every time
 
 # pseudorandom deterministic function should be uniform
 # cannot return 0
@@ -42,9 +42,9 @@ def kangaroo(alpha, beta, n, a, b):
     raise Exception("failed to reach trap.")
 
 if __name__ == "__main__":
-    g = 2
-    n =      13
-    secret = 6
+    g = 3
+    n =      17
+    secret = 3
     beta = pow(g, secret, n)
     print("beta = ", beta)
     try:

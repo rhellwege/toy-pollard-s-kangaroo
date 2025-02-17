@@ -44,6 +44,7 @@ def kangaroo(alpha, beta, n, a, b):
         wild_steps.append((yWild, dWild, step))  # Include step in the tuple
 
         if yWild == xTame:  # Wild kangaroo trapped
+            print((b+dTame-dWild)%n)
             return tame_steps, wild_steps, dTame, dWild, i
         i += 1
 
@@ -51,9 +52,9 @@ def kangaroo(alpha, beta, n, a, b):
 
 class KangarooAnimation(Scene):
     def construct(self):
-        g = 2
+        g = 3
         n = 17
-        secret = 3
+        secret = 9
         beta = pow(g, secret, n)
 
         trapSteps = math.ceil(math.sqrt((n) / 2))  # Heuristic tame trap steps
@@ -62,8 +63,7 @@ class KangarooAnimation(Scene):
         upperStep = math.ceil(math.sqrt((n))*1.5)
         # Run the kangaroo algorithm
         try:
-            tame_steps, wild_steps, dTame, dWild, wild_steps_count = kangaroo(
-                g, beta, n, 0, n)
+            tame_steps, wild_steps, dTame, dWild, wild_steps_count = kangaroo(g, beta, n, 0, n)
             print(tame_steps, "\n\n")
             print(wild_steps, "\n\n")
         except Exception as e:
